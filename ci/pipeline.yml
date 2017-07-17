@@ -3,7 +3,7 @@ resources:
 - name: pal-tracker
   type: git
   source:
-    uri: TODO your github git@github.com:platform-acceleration-lab/pal-tracker.git
+    uri: git@github.com:davwards/pal-tracker.git
     branch: master
     private_key: {{github-private-key}}
 - name: pal-tracker-artifacts
@@ -29,6 +29,7 @@ resources:
     password: {{deploy-password}}
     organization: {{deploy-org}}
     space: {{review-space}}
+    skip_cert_check: true
 
 - name: production-deployment
   type: cf
@@ -38,6 +39,7 @@ resources:
     password: {{deploy-password}}
     organization: {{deploy-org}}
     space: {{production-space}}
+    skip_cert_check: true
 
 jobs:
 - name: build
