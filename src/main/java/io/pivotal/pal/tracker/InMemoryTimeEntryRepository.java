@@ -10,7 +10,7 @@ public class InMemoryTimeEntryRepository implements TimeEntryRepository {
 
     @Override
     public TimeEntry create(TimeEntry timeEntry) {
-        timeEntry.setId(Math.round(Math.random()*10000));
+        timeEntry.setId(timeEntries.size() + 1);
         timeEntries.put(timeEntry.getId(), timeEntry);
         return timeEntry;
     }
