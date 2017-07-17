@@ -44,50 +44,52 @@ public class PalTrackerTest {
         assertThat(createResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
         DocumentContext createJson = parse(createResponse.getBody());
-        assertThat(createJson.read("$.id", Long.class)).isEqualTo(1L);
+        assertThat(createJson.read("$.id", Long.class)).isNotNull();
+        String createdTimeEntryId = createJson.read("$.id", String.class);
+
         assertThat(createJson.read("$.projectId", Long.class)).isEqualTo(123L);
         assertThat(createJson.read("$.userId", Long.class)).isEqualTo(456L);
         assertThat(createJson.read("$.date", String.class)).isEqualTo("today");
         assertThat(createJson.read("$.hours", Long.class)).isEqualTo(8);
 
         // Read
-        ResponseEntity<String> readResponse = this.restTemplate.getForEntity("/timeEntries/1", String.class);
+        ResponseEntity<String> readResponse = this.restTemplate.getForEntity("/timeEntries/" + createdTimeEntryId, String.class);
         assertThat(readResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
         DocumentContext readJson = parse(createResponse.getBody());
-        assertThat(readJson.read("$.id", Long.class)).isEqualTo(1L);
+        assertThat(readJson.read("$.id", String.class)).isEqualTo(createdTimeEntryId);
         assertThat(readJson.read("$.projectId", Long.class)).isEqualTo(123L);
         assertThat(readJson.read("$.userId", Long.class)).isEqualTo(456L);
         assertThat(readJson.read("$.date", String.class)).isEqualTo("today");
         assertThat(readJson.read("$.hours", Long.class)).isEqualTo(8);
 
         // Update
-        TimeEntry timeEntryUpdates = new TimeEntry(1, 2, 3, "tomorrow", 9);
+        TimeEntry timeEntryUpdates = new TimeEntry(Long.valueOf(createdTimeEntryId), 2, 3, "tomorrow", 9);
 
-        ResponseEntity<String> updateResponse = restTemplate.exchange("/timeEntries/1", HttpMethod.PUT, new HttpEntity(timeEntryUpdates, null), String.class);
+        ResponseEntity<String> updateResponse = restTemplate.exchange("/timeEntries/" + createdTimeEntryId, HttpMethod.PUT, new HttpEntity(timeEntryUpdates, null), String.class);
         assertThat(updateResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         DocumentContext updateJson = parse(updateResponse.getBody());
-        assertThat(updateJson.read("$.id", Long.class)).isEqualTo(1L);
+        assertThat(updateJson.read("$.id", String.class)).isEqualTo(createdTimeEntryId);
         assertThat(updateJson.read("$.projectId", Long.class)).isEqualTo(2L);
         assertThat(updateJson.read("$.userId", Long.class)).isEqualTo(3L);
         assertThat(updateJson.read("$.date", String.class)).isEqualTo("tomorrow");
         assertThat(updateJson.read("$.hours", Long.class)).isEqualTo(9);
 
-        ResponseEntity<String> updatedReadResponse = this.restTemplate.getForEntity("/timeEntries/1", String.class);
+        ResponseEntity<String> updatedReadResponse = this.restTemplate.getForEntity("/timeEntries/" + createdTimeEntryId, String.class);
         assertThat(updatedReadResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         DocumentContext updatedReadJson = parse(updatedReadResponse.getBody());
-        assertThat(updatedReadJson.read("$.id", Long.class)).isEqualTo(1L);
+        assertThat(updatedReadJson.read("$.id", String.class)).isEqualTo(createdTimeEntryId);
         assertThat(updatedReadJson.read("$.projectId", Long.class)).isEqualTo(2L);
         assertThat(updatedReadJson.read("$.userId", Long.class)).isEqualTo(3L);
         assertThat(updatedReadJson.read("$.date", String.class)).isEqualTo("tomorrow");
         assertThat(updatedReadJson.read("$.hours", Long.class)).isEqualTo(9);
 
         // Delete
-        ResponseEntity<String> deleteResponse = restTemplate.exchange("/timeEntries/1", HttpMethod.DELETE, null, String.class);
+        ResponseEntity<String> deleteResponse = restTemplate.exchange("/timeEntries/" + createdTimeEntryId, HttpMethod.DELETE, null, String.class);
         assertThat(deleteResponse.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
 
-        ResponseEntity<String> deletedReadResponse = this.restTemplate.getForEntity("/timeEntries/1", String.class);
+        ResponseEntity<String> deletedReadResponse = this.restTemplate.getForEntity("/timeEntries/" + createdTimeEntryId, String.class);
         assertThat(deletedReadResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 }
