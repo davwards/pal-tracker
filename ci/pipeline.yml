@@ -67,6 +67,8 @@ jobs:
     params:
       manifest: pal-tracker/ci/deployments/manifest-review.yml
       path: pal-tracker-artifacts/pal-tracker-*.jar
+      environment_variables:
+        MANAGEMENT_SECURITY_ENABLED: "false"
 
 - name: deploy-production
   plan:
@@ -77,3 +79,5 @@ jobs:
     params:
       manifest: pal-tracker/ci/deployments/manifest-production.yml
       path: pal-tracker-artifacts/pal-tracker-*.jar
+      environment_variables:
+        MANAGEMENT_SECURITY_ENABLED: "false"
